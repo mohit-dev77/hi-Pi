@@ -8,9 +8,16 @@ def similar_users(user_id, limit=3):
     try:
         all_users = builder.db.query(User).all()
         contexts = {u.user_id: builder.get_user_context(u.user_id) for u in all_users}
+        contexts = {uid: ctx for uid, ctx in contexts.items() if ctx}
+
+        if user_id not in contexts:
+            return []
 
         def features(ctx):
             result = {}
+            if not ctx:
+                return result
+
             ordering = ctx.get("ordering_profile", {})
             behavior = ctx.get("behavior") or ctx.get("time_behavior", {})
 

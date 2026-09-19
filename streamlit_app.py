@@ -1,16 +1,24 @@
 
 import json
+import os
 from pathlib import Path
 
 import requests
 import streamlit as st
+from dotenv import load_dotenv
+
+from app.context.refresh import refresh_context
+from app.database.seed import seed
+
+load_dotenv()
 
 
 # ============================================================
 # CONFIG
 # ============================================================
 
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("API_URL", "http://localhost:8000")
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 st.set_page_config(
     page_title="FoodLens Context Layer",
@@ -24,6 +32,21 @@ st.set_page_config(
 # HELPERS
 # ============================================================
 
+def ensure_demo_data():
+    """Rebuild the seeded DB and context JSON so the app reflects the current dataset."""
+    store_path = PROJECT_ROOT / "context_store.json"
+
+    try:
+        if not store_path.exists() or store_path.stat().st_size == 0:
+            seed(150)
+            refresh_context()
+        elif not (PROJECT_ROOT / "foodlens.db").exists():
+            seed(150)
+            refresh_context()
+    except Exception as exc:  # pragma: no cover - UI-level safeguard
+        st.warning(f"Unable to refresh demo data: {exc}")
+
+
 def load_context_store():
     """
     Load synthesized context directly from context_store.json.
@@ -31,9 +54,9 @@ def load_context_store():
     This keeps the dashboard usable even when the conversational
     API is not being used.
     """
-    path = Path("context_store.json")
+    path = PROJECT_ROOT / "context_store.json"
 
-    if not path.exists():
+    if not path.exists() or path.stat().st_size == 0:
         return {}
 
     try:
@@ -137,6 +160,11 @@ st.caption(
     "From raw platform activity → synthesized user context → conversational intelligence"
 )
 
+if os.getenv("GEMINI_API_KEY"):
+    st.success("Gemini API: Live mode enabled")
+else:
+    st.warning("Gemini API: Local fallback mode (no API key configured)")
+
 st.divider()
 
 
@@ -144,6 +172,7 @@ st.divider()
 # SIDEBAR
 # ============================================================
 
+ensure_demo_data()
 store = load_context_store()
 
 if not store:

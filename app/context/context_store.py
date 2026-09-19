@@ -14,17 +14,17 @@ class ContextStore:
     def save(self, user_id, context):
 
         existing = self.load_all()
-
         existing[user_id] = context
 
-        self.path.write_text(
-            json.dumps(
-                existing,
-                indent=2,
-                ensure_ascii=False
-            ),
-            encoding="utf-8"
+        payload = json.dumps(
+            existing,
+            indent=2,
+            ensure_ascii=False,
         )
+
+        tmp_path = self.path.with_suffix(".tmp")
+        tmp_path.write_text(payload, encoding="utf-8")
+        tmp_path.replace(self.path)
 
     def get(self, user_id):
 
@@ -34,15 +34,17 @@ class ContextStore:
 
     def load_all(self):
 
-        if not self.path.exists():
-
+        if not self.path.exists() or self.path.stat().st_size == 0:
             return {}
 
-        return json.loads(
-            self.path.read_text(
-                encoding="utf-8"
+        try:
+            return json.loads(
+                self.path.read_text(
+                    encoding="utf-8"
+                )
             )
-        )
+        except (json.JSONDecodeError, OSError, ValueError):
+            return {}
 
     def build_and_save_all(
         self,
@@ -56,6 +58,8 @@ class ContextStore:
             .query(User)
             .all()
         )
+
+        self.path.write_text("{}", encoding="utf-8")
 
         for user in users:
 

@@ -358,6 +358,8 @@ class ContextBuilder:
         return {
 
             "user_id": user.user_id,
+            "name": user.name,
+            "city": user.city,
 
             "identity": {
                 "name": user.name,

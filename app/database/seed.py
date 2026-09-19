@@ -1,19 +1,33 @@
+import random
 from datetime import datetime, timedelta
 from app.database.db import Base, engine, SessionLocal
 from app.database.models import User, Restaurant, Order
 
-def seed():
+def seed(num_users=150):
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     db = SessionLocal()
 
-    users = [
-        User(user_id="U1001", name="Rahul Sharma", city="Noida"),
-        User(user_id="U1002", name="Priya Singh", city="Delhi"),
-        User(user_id="U1003", name="Amit Kumar", city="Gurgaon"),
-        User(user_id="U1004", name="Neha Verma", city="Noida"),
-        User(user_id="U1005", name="Arjun Mehta", city="Delhi"),
-    ]
+    # -------------------------
+    # USERS
+    # -------------------------
+    cities = ["Noida", "Delhi", "Gurgaon", "Mumbai", "Bangalore", "Hyderabad"]
+    first_names = ["Rahul", "Priya", "Amit", "Neha", "Arjun", "Sneha", "Rohit", "Kiran", "Anjali", "Vikram"]
+    last_names = ["Sharma", "Singh", "Kumar", "Verma", "Mehta", "Patel", "Reddy", "Iyer", "Das", "Gupta"]
+
+    users = []
+    for i in range(1001, 1001 + num_users):
+        if i == 1001:
+            name = "Rahul Sharma"
+            city = "Noida"
+        else:
+            name = f"{random.choice(first_names)} {random.choice(last_names)}"
+            city = random.choice(cities)
+        users.append(User(user_id=f"U{i}", name=name, city=city))
+
+    # -------------------------
+    # RESTAURANTS
+    # -------------------------
     restaurants = [
         Restaurant(restaurant_id="R101", name="Biryani Blues", cuisine="Biryani"),
         Restaurant(restaurant_id="R102", name="Mainland China", cuisine="Chinese"),
@@ -22,47 +36,41 @@ def seed():
         Restaurant(restaurant_id="R105", name="South Spice", cuisine="South Indian"),
         Restaurant(restaurant_id="R106", name="Healthy Bowl", cuisine="Healthy"),
     ]
+
     db.add_all(users + restaurants)
     db.commit()
 
-    patterns = {
-        "U1001": [
-            ("R101",450,5),("R102",320,4),("R101",510,5),("R103",420,4),
-            ("R101",480,5),("R102",390,4),("R101",520,5),("R103",460,4),
-            ("R101",490,5),("R102",350,4),("R103",430,5),("R101",550,5)
-        ],
-        "U1002": [
-            ("R104",240,4),("R105",310,4),("R104",220,3),("R105",350,5),
-            ("R106",420,4),("R104",260,4),("R105",300,4),("R106",390,5)
-        ],
-        "U1003": [
-            ("R103",500,5),("R104",280,4),("R103",450,5),("R101",600,4),
-            ("R103",520,5),("R104",260,3),("R101",580,5),("R103",490,4)
-        ],
-        "U1004": [
-            ("R106",380,5),("R105",330,5),("R106",420,4),("R105",290,4),
-            ("R106",410,5),("R104",250,3)
-        ],
-        "U1005": [
-            ("R102",700,5),("R101",650,5),("R102",720,4),("R103",680,5),
-            ("R102",750,5),("R101",620,4)
-        ]
-    }
-
-    base = datetime(2026, 9, 1, 19, 30)
+    # -------------------------
+    # ORDERS
+    # -------------------------
+    start_date = datetime(2026, 1, 1, 12, 0)  # Starting from January 1, 2026
     idx = 1
-    for user_id, rows in patterns.items():
-        for i, (restaurant_id, amount, rating) in enumerate(rows):
-            hour = 20 if user_id in {"U1001","U1003","U1005"} else (13 if i % 2 == 0 else 19)
-            dt = (base - timedelta(days=i*3)).replace(hour=hour, minute=(i*7)%60)
+
+    for user in users:
+        num_orders = random.randint(5, 20)  # Each user places 5–20 orders
+        for _ in range(num_orders):
+            restaurant = random.choice(restaurants)
+            amount = random.randint(200, 800)  # ₹200–₹800
+            rating = random.choice([3, 4, 5, None])  # Some orders unrated
+            hour = random.choice([13, 19, 20])  # Lunch / dinner hours
+            
+            # Spread orders across 150 days forward from the start date
+            random_day_offset = random.randint(0, 150)
+            dt = start_date + timedelta(days=random_day_offset, hours=hour, minutes=random.randint(0, 59))
+
             db.add(Order(
-                order_id=f"O{idx:04d}", user_id=user_id, restaurant_id=restaurant_id,
-                amount=amount, order_time=dt, rating=rating
+                order_id=f"O{idx:05d}",
+                user_id=user.user_id,
+                restaurant_id=restaurant.restaurant_id,
+                amount=amount,
+                order_time=dt,
+                rating=rating
             ))
             idx += 1
+
     db.commit()
     db.close()
-    print("Seeded foodlens.db")
+    print(f"Seeded {num_users} users with synthetic orders spread across a 150-day window.")
 
 if __name__ == "__main__":
-    seed()
+    seed(150)  # Generate 150 users

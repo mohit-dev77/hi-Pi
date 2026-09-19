@@ -2,10 +2,18 @@ services:
   - type: web
     name: foodlens-api
     env: python
-    buildCommand: pip install -r requirements.txt && python -m app.database.seed
+    buildCommand: pip install -r requirements.txt && python -m app.database.seed && python -m app.context.refresh
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: "*"
   - type: web
     name: foodlens-ui
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port $PORT
+    startCommand: streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port $PORT --server.headless true
+    envVars:
+      - key: API_URL
+        value: "https://foodlens-api.onrender.com"
+      - key: STREAMLIT_SERVER_HEADLESS
+        value: "true"
