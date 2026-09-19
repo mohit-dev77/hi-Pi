@@ -1,28 +1,168 @@
 # FoodLens — Food Delivery Context Layer
 
-Hackathon-ready Python MVP for the Context Layer problem.
+FoodLens is a context-layer MVP for the food delivery ecosystem. It turns raw transaction and behavioral data into a structured user profile that explains who a customer is, how they order, what they value, and how they behave over time. Instead of exposing fragmented database rows, the app creates a customer context layer that captures ordering habits, loyalty, spending trends, cuisine preferences, recency, frequency, and segment-level insight.
+
+The project combines a FastAPI backend, a context-building engine, a local SQLite database, a generated context store, and a conversational AI agent powered by Gemini. A Streamlit frontend lets users browse customers and ask natural-language questions about them. This design demonstrates the idea of moving from raw platform activity to a richer, more useful understanding of each user, which can be extended beyond food delivery to other digital platforms and commerce workflows.
 
 ## Architecture
-Raw food-delivery events -> Context Builder -> synthesized user context -> agent tools -> conversational answer.
 
-## Setup
-```bash
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-source .venv/bin/activate
-pip install -r requirements.txt
-python -m app.database.seed
-uvicorn app.main:app --reload
+The system is built around a simple but powerful pipeline:
+
+```text
+Food delivery data
+        ↓
+SQLite database
+        ↓
+Context Builder
+        ↓
+Synthesized user context JSON
+        ↓
+FastAPI backend + Gemini agent
+        ↓
+Streamlit dashboard / user queries
 ```
 
-In another terminal:
+### Core components
+- Database layer: SQLite with seeded users, restaurants, and orders
+- Context builder: derives customer attributes from platform activity patterns
+- Context store: JSON cache of synthesized user context for quick access
+- API layer: FastAPI endpoints for health checks, context retrieval, and chat
+- AI layer: Gemini-based reasoning using the generated context
+- Frontend layer: Streamlit interface for exploring users and asking questions
+
+## Features
+- Customer profile synthesis from real order behavior
+- Recency, frequency, monetary value, and loyalty analysis
+- Cuisine and restaurant preference detection
+- Customer segmentation and behavioral summaries
+- Similar-user matching and comparison logic
+- Natural-language Q&A using Gemini
+- Streamlit dashboard for demo and exploration
+- Render-ready deployment setup
+
+## Tech stack
+- Python 3.11+
+- FastAPI
+- Streamlit
+- SQLAlchemy
+- SQLite
+- Google Gemini API
+- Python-dotenv
+- Requests
+- Pytest
+
+## Project structure
+```text
+foodlens/
+├── app/
+│   ├── agents/
+│   │   ├── __init__.py
+│   │   └── agent.py
+│   ├── context/
+│   │   ├── __init__.py
+│   │   ├── builder.py
+│   │   ├── context_store.py
+│   │   └── refresh.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── db.py
+│   │   ├── models.py
+│   │   └── seed.py
+│   ├── matching/
+│   │   ├── __init__.py
+│   │   └── similarity.py
+│   ├── __init__.py
+│   └── main.py
+├── tests/
+│   └── test_context.py
+├── .env.example
+├── Dockerfile
+├── README.md
+├── render.yaml
+├── requirements.txt
+├── streamlit_app.py
+├── context_store.json
+├── foodlens.db
+└── .venv/
+```
+
+## Setup
+
+### 1) Create a virtual environment
+```bash
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS/Linux
+source .venv/bin/activate
+```
+
+### 2) Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3) Set environment variables
+Create a `.env` file in the project root with:
+```env
+GEMINI_API_KEY=your_google_gemini_api_key
+API_URL=http://localhost:8000
+ALLOWED_ORIGINS=http://localhost:8501
+```
+
+### 4) Seed the database and refresh context
+```bash
+python -m app.database.seed
+python -m app.context.refresh
+```
+
+### 5) Start backend
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+### 6) Start frontend
 ```bash
 streamlit run streamlit_app.py
 ```
 
-Open http://localhost:8501
+Open the Streamlit app at:
+```text
+http://localhost:8501
+```
+
+## Environment variables
+- `GEMINI_API_KEY`: required for live Gemini-based AI responses
+- `API_URL`: frontend backend endpoint used by Streamlit
+- `ALLOWED_ORIGINS`: CORS allowlist for the FastAPI app
+- `PORT`: used in Render deployment
+
+## Deployment on Render
+
+This project is structured to run as two separate services:
+1. API service for FastAPI backend
+2. UI service for Streamlit frontend
+
+### Render configuration
+The repository includes `render.yaml` for deploying both services. The API service runs:
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+The UI service runs:
+```bash
+streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port $PORT --server.headless true
+```
+
+In production, set the UI environment variable:
+```env
+API_URL=https://your-backend-render-url
+GEMINI_API_KEY=your_live_key
+```
+
+This ensures the frontend talks to the deployed backend instead of localhost.
 
 ## Example questions
 - Is Rahul Sharma in our database?
@@ -31,69 +171,18 @@ Open http://localhost:8501
 - Why does Rahul prefer Biryani?
 - How much does Rahul spend?
 - Find users similar to Rahul Sharma
+- Which customers are most loyal in the last 30 days?
 
-Gemini is optional. Without it, FoodLens uses deterministic Python reasoning so the demo remains runnable.
+## Validation
+Run the automated checks:
+```bash
+python -m pytest -q
+```
 
+If you want to rebuild all context data:
+```bash
+python -m app.context.refresh
+```
 
-PROBLEM	STATEMENT		|		CONTEXT	LAYER	TRACK
-Building	a	Universal	Context	Layer	for	Platform	Users
-Ignite	with	Delhi		|		Ignite	Room
-Background
-Most	platforms	today	store	user	data	in	silos:	a	signup	form	here,	an	activity	log	there.	None	of	these	fragments	alone	tell	you	who	a	user	actually	is	on
-that	platform:	what	they	do,	what	they	are	good	at,	and	how	they	behave	over	time.	Meanwhile,	a	company	or	organizer	often	needs	to	answer	a
-simple	question,	"Is	this	person	in	our	user	base,	and	what	do	we	know	about	them?",	without	manually	digging	through	dashboards,	tables,	or
-spreadsheets.
-Problem	Statement
-Design	and	build	a	Context	Layer:	a	system	sitting	above	a	platform's	raw	database	that	continuously	builds	a	rich,	structured	understanding	of	each
-user,	based	on	their	activity	on	that	specific	platform	(and,	where	relevant,	external	professional	data).	This	context	should	be	queryable	through	a
-conversational	AI	agent	that	lets	a	company	or	organizer	ask	open-ended	questions	about	any	user	in	their	database	and	get	a	synthesized	answer,	not
-just	raw	fields	pulled	from	a	table.
-Teams	must	pick	one	platform	use	case	of	their	choice	(for	example,	a	hackathon	listing	platform,	a	food	delivery	app,	a	coding	practice	platform,	a
-freelance	marketplace,	or	a	community	app)	and	design	the	context	layer	specifically	for	that	use	case.	What	counts	as	meaningful	"context"	is	entirely
-dependent	on	the	use	case	chosen;	there	is	no	fixed	schema.
-What	Changes	By	Use	Case
-Tech-oriented	platforms	(a	hackathon	platform,	a	developer	community,	a	coding	practice	platform):	external	professional	context,	such	as
-LinkedIn	(education,	work	history)	and	GitHub	(repositories,	languages,	contribution	activity),	is	relevant	and	should	be	pulled	in	alongside	platform
-activity.
-Non-tech	platforms	(a	food	delivery	app,	for	example):	external	social	or	professional	scraping	is	not	relevant	and	should	be	skipped.	Context	here
-comes	purely	from	platform-native	behavioral	data,	such	as	what	cuisines	a	user	orders,	order	frequency,	spending	patterns,	and	ratings	given.
-Teams	should	clearly	state,	upfront,	which	use	case	they	are	solving	for	and	justify	what	sources	of	context	make	sense	for	it.	This	decision	is	itself	part
-of	the	deliverable,	not	just	an	implementation	detail.
-Example	Use	Case
-ILLUSTRATIVE	EXAMPLE:	HACKATHON	LISTING	PLATFORM
-A	hackathon	listing	platform	wants	a	context	layer	over	its	users.	For	this	use	case:
-Pre-built	/	external	context:	LinkedIn	(education,	past	roles)	and	GitHub	(repositories,	tech	stack,	contribution	history).
-Platform-native	context:	number	of	hackathons	participated	in,	projects	submitted,	mentoring	or	feedback	scores	received,	events	attended,
-and	comments	or	interactions	on	the	platform.
-An	organizer	can	then	ask	the	agent:	"Is	Shiv	in	our	database?	If	so,	tell	me	about	him:	his	background,	what	he	has	built,	and	how	active	he	has
-been	in	our	hackathons."
-The	agent	responds	with	a	synthesized	answer	pulling	from	both	external	and	platform-native	context,	not	a	raw	data	export.
-This	is	one	worked	example.	Teams	are	free	to	pick	any	other	platform	and	define	their	own	relevant	context	sources	following	the	same	logic.
-Core	Requirements
-Choose	and	justify	a	platform	use	case,	and	define	what	"context"	means	for	it.
-Ingest	context	relevant	to	that	use	case:	external	sources	(LinkedIn,	GitHub)	only	where	the	use	case	calls	for	it,	and/or	platform-native	activity
-data.
-Build	a	context	layer	above	the	raw	database:	not	just	a	lookup	into	existing	user	tables,	but	a	structured,	synthesized	profile	per	user	built
-from	the	ingested	signals.
-Expose	it	via	a	conversational	agent	that	a	company	or	organizer-type	user	can	query,	including	checking	whether	a	given	person	exists	in	the
-platform's	user	base,	and	answering	open-ended	questions	about	them.
-Keep	it	generalizable	in	design,	even	though	the	demo	targets	one	chosen	use	case.
-Bonus	Points
-Building	a	matchmaking	algorithm	on	top	of	the	context	layer	(for	example,	matching	users	with	each	other,	or	with	opportunities,	teams,	or
-mentors,	based	on	their	context).
-Demonstrating	any	other	downstream	application	built	using	the	context	layer,	beyond	just	constructing	it,	showing	that	the	layer	is	genuinely
-useful	and	not	just	a	data	pipeline.
-Evaluation	Criteria
-What	we	are	looking	for
-Criteria
-Use-case	clarity
-Context	quality
-Agent	quality
-Architecture
-Bonus	execution
-Is	the	chosen	platform	use	case	and	its	context	sources	well	justified?
-How	well	the	synthesized	context	actually	reflects	the	user,	not	just	a	data	dump.
-Accuracy	and	usefulness	of	answers	to	open-ended	questions,	including	existence	checks.
-Is	the	context	layer	cleanly	built	above	the	database,	and	could	it	generalize	to	other	use	cases?
-Quality	of	any	matchmaking	algorithm	or	downstream	use-case	demo.
-Ignite	with	Delhi	·	Context	Layer	Track	·	Problem	Statement
+## Summary
+FoodLens demonstrates how a digital platform can move from raw transaction records to actionable customer understanding using a context layer. By synthesizing user signals into a reusable profile and exposing them through a conversational agent, the project shows a practical path toward personalized recommendations, analytical support, and smarter customer intelligence in real-world product workflows.
