@@ -171,6 +171,7 @@ This ensures the frontend talks to the deployed backend instead of localhost.
 - Why does Rahul prefer Biryani?
 - How much does Rahul spend?
 - Find users similar to Rahul Sharma
+
 - Which customers are most loyal in the last 30 days?
 
 ## Validation
