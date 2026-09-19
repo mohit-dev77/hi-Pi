@@ -1,0 +1,620 @@
+{
+  "U1001": {
+    "user_id": "U1001",
+    "identity": {
+      "name": "Rahul Sharma",
+      "city": "Noida"
+    },
+    "ordering_profile": {
+      "total_orders": 12,
+      "total_spend": 5370.0,
+      "average_order_value": 447.5,
+      "median_order_value": 455.0,
+      "minimum_order_value": 320.0,
+      "maximum_order_value": 550.0,
+      "favorite_cuisines": [
+        {
+          "name": "Biryani",
+          "orders": 6,
+          "percentage": 0.5
+        },
+        {
+          "name": "North Indian",
+          "orders": 3,
+          "percentage": 0.25
+        },
+        {
+          "name": "Chinese",
+          "orders": 3,
+          "percentage": 0.25
+        }
+      ],
+      "favorite_restaurants": [
+        {
+          "name": "Biryani Blues",
+          "orders": 6
+        },
+        {
+          "name": "Punjabi Tadka",
+          "orders": 3
+        },
+        {
+          "name": "Mainland China",
+          "orders": 3
+        }
+      ]
+    },
+    "recency": {
+      "first_order": "2026-07-30T20:17:00",
+      "last_order": "2026-09-01T20:00:00",
+      "days_since_last_order": 17,
+      "orders_last_30_days": 5,
+      "orders_last_60_days": 12,
+      "orders_last_90_days": 12
+    },
+    "frequency": {
+      "orders_per_week": 2.62,
+      "orders_per_month": 11.25,
+      "average_days_between_orders": 2.09,
+      "customer_lifetime_days": 32
+    },
+    "time_behavior": {
+      "preferred_day": "Thursday",
+      "preferred_hour": 20,
+      "breakfast_orders": 0,
+      "lunch_orders": 0,
+      "dinner_orders": 12,
+      "late_night_orders": 0,
+      "weekday_orders": 8,
+      "weekend_orders": 4,
+      "weekend_order_rate": 0.333,
+      "dinner_order_rate": 1.0
+    },
+    "loyalty": {
+      "level": "high",
+      "repeat_order_rate": 0.75,
+      "unique_restaurants": 3,
+      "repeat_orders": 9,
+      "top_restaurant": "Biryani Blues",
+      "top_restaurant_share": 0.5
+    },
+    "spending": {
+      "spending_level": "medium",
+      "total_spend": 5370.0,
+      "average_order_value": 447.5,
+      "median_order_value": 455.0,
+      "minimum_order_value": 320.0,
+      "maximum_order_value": 550.0,
+      "standard_deviation": 66.35,
+      "spending_consistency": "consistent",
+      "coefficient_of_variation": 0.148
+    },
+    "spending_trend": {
+      "direction": "stable",
+      "previous_spend": 2800.0,
+      "recent_spend": 2570.0,
+      "change_percentage": -8.21
+    },
+    "order_trend": {
+      "direction": "stable",
+      "recent_orders": 6,
+      "previous_orders": 6,
+      "change_percentage": 0.0
+    },
+    "rating_behavior": {
+      "average_rating_given": 4.58,
+      "ratings_count": 12,
+      "positive_rating_rate": 1.0
+    },
+    "customer_segment": "Highly loyal frequent customer",
+    "behavioral_insights": [
+      "Biryani is the most frequently ordered cuisine (50% of orders).",
+      "Customer shows strong restaurant loyalty and frequently repeats previous restaurants.",
+      "Average order value is ₹448, indicating medium average order spending.",
+      "Ordering activity has remained relatively stable.",
+      "Customer has been active within the last month.",
+      "Customer is more dinner-oriented than lunch-oriented."
+    ],
+    "evidence": {
+      "orders_analyzed": 12,
+      "first_order": "2026-07-30T20:17:00",
+      "last_order": "2026-09-01T20:00:00",
+      "data_source": "platform-native orders, restaurants and ratings"
+    },
+    "summary": "Rahul Sharma is a highly loyal frequent customer on the platform. They have placed 12 orders with total recorded spending of ₹5370 and an average order value of ₹448. Their strongest cuisine preferences are Biryani, North Indian, Chinese. Restaurant loyalty is high. Ordering activity is stable, while spending is stable. Their last recorded order was 17 days ago."
+  },
+  "U1002": {
+    "user_id": "U1002",
+    "identity": {
+      "name": "Priya Singh",
+      "city": "Delhi"
+    },
+    "ordering_profile": {
+      "total_orders": 8,
+      "total_spend": 2490.0,
+      "average_order_value": 311.25,
+      "median_order_value": 305.0,
+      "minimum_order_value": 220.0,
+      "maximum_order_value": 420.0,
+      "favorite_cuisines": [
+        {
+          "name": "South Indian",
+          "orders": 3,
+          "percentage": 0.375
+        },
+        {
+          "name": "Pizza",
+          "orders": 3,
+          "percentage": 0.375
+        },
+        {
+          "name": "Healthy",
+          "orders": 2,
+          "percentage": 0.25
+        }
+      ],
+      "favorite_restaurants": [
+        {
+          "name": "South Spice",
+          "orders": 3
+        },
+        {
+          "name": "Dominos",
+          "orders": 3
+        },
+        {
+          "name": "Healthy Bowl",
+          "orders": 2
+        }
+      ]
+    },
+    "recency": {
+      "first_order": "2026-08-11T19:49:00",
+      "last_order": "2026-09-01T13:00:00",
+      "days_since_last_order": 18,
+      "orders_last_30_days": 5,
+      "orders_last_60_days": 8,
+      "orders_last_90_days": 8
+    },
+    "frequency": {
+      "orders_per_week": 2.8,
+      "orders_per_month": 8.0,
+      "average_days_between_orders": 2.43,
+      "customer_lifetime_days": 20
+    },
+    "time_behavior": {
+      "preferred_day": "Tuesday",
+      "preferred_hour": 19,
+      "breakfast_orders": 0,
+      "lunch_orders": 4,
+      "dinner_orders": 4,
+      "late_night_orders": 0,
+      "weekday_orders": 6,
+      "weekend_orders": 2,
+      "weekend_order_rate": 0.25,
+      "dinner_order_rate": 0.5
+    },
+    "loyalty": {
+      "level": "high",
+      "repeat_order_rate": 0.625,
+      "unique_restaurants": 3,
+      "repeat_orders": 5,
+      "top_restaurant": "South Spice",
+      "top_restaurant_share": 0.375
+    },
+    "spending": {
+      "spending_level": "low",
+      "total_spend": 2490.0,
+      "average_order_value": 311.25,
+      "median_order_value": 305.0,
+      "minimum_order_value": 220.0,
+      "maximum_order_value": 420.0,
+      "standard_deviation": 66.79,
+      "spending_consistency": "consistent",
+      "coefficient_of_variation": 0.215
+    },
+    "spending_trend": {
+      "direction": "stable",
+      "previous_spend": 1370.0,
+      "recent_spend": 1120.0,
+      "change_percentage": -18.25
+    },
+    "order_trend": {
+      "direction": "stable",
+      "recent_orders": 4,
+      "previous_orders": 4,
+      "change_percentage": 0.0
+    },
+    "rating_behavior": {
+      "average_rating_given": 4.12,
+      "ratings_count": 8,
+      "positive_rating_rate": 0.875
+    },
+    "customer_segment": "Highly loyal frequent customer",
+    "behavioral_insights": [
+      "South Indian is the most frequently ordered cuisine (38% of orders).",
+      "Customer shows strong restaurant loyalty and frequently repeats previous restaurants.",
+      "Average order value is ₹311, indicating low average order spending.",
+      "Ordering activity has remained relatively stable.",
+      "Customer has been active within the last month."
+    ],
+    "evidence": {
+      "orders_analyzed": 8,
+      "first_order": "2026-08-11T19:49:00",
+      "last_order": "2026-09-01T13:00:00",
+      "data_source": "platform-native orders, restaurants and ratings"
+    },
+    "summary": "Priya Singh is a highly loyal frequent customer on the platform. They have placed 8 orders with total recorded spending of ₹2490 and an average order value of ₹311. Their strongest cuisine preferences are South Indian, Pizza, Healthy. Restaurant loyalty is high. Ordering activity is stable, while spending is stable. Their last recorded order was 18 days ago."
+  },
+  "U1003": {
+    "user_id": "U1003",
+    "identity": {
+      "name": "Amit Kumar",
+      "city": "Gurgaon"
+    },
+    "ordering_profile": {
+      "total_orders": 8,
+      "total_spend": 3680.0,
+      "average_order_value": 460.0,
+      "median_order_value": 495.0,
+      "minimum_order_value": 260.0,
+      "maximum_order_value": 600.0,
+      "favorite_cuisines": [
+        {
+          "name": "North Indian",
+          "orders": 4,
+          "percentage": 0.5
+        },
+        {
+          "name": "Biryani",
+          "orders": 2,
+          "percentage": 0.25
+        },
+        {
+          "name": "Pizza",
+          "orders": 2,
+          "percentage": 0.25
+        }
+      ],
+      "favorite_restaurants": [
+        {
+          "name": "Punjabi Tadka",
+          "orders": 4
+        },
+        {
+          "name": "Biryani Blues",
+          "orders": 2
+        },
+        {
+          "name": "Dominos",
+          "orders": 2
+        }
+      ]
+    },
+    "recency": {
+      "first_order": "2026-08-11T20:49:00",
+      "last_order": "2026-09-01T20:00:00",
+      "days_since_last_order": 17,
+      "orders_last_30_days": 5,
+      "orders_last_60_days": 8,
+      "orders_last_90_days": 8
+    },
+    "frequency": {
+      "orders_per_week": 2.8,
+      "orders_per_month": 8.0,
+      "average_days_between_orders": 2,
+      "customer_lifetime_days": 20
+    },
+    "time_behavior": {
+      "preferred_day": "Tuesday",
+      "preferred_hour": 20,
+      "breakfast_orders": 0,
+      "lunch_orders": 0,
+      "dinner_orders": 8,
+      "late_night_orders": 0,
+      "weekday_orders": 6,
+      "weekend_orders": 2,
+      "weekend_order_rate": 0.25,
+      "dinner_order_rate": 1.0
+    },
+    "loyalty": {
+      "level": "high",
+      "repeat_order_rate": 0.625,
+      "unique_restaurants": 3,
+      "repeat_orders": 5,
+      "top_restaurant": "Punjabi Tadka",
+      "top_restaurant_share": 0.5
+    },
+    "spending": {
+      "spending_level": "medium",
+      "total_spend": 3680.0,
+      "average_order_value": 460.0,
+      "median_order_value": 495.0,
+      "minimum_order_value": 260.0,
+      "maximum_order_value": 600.0,
+      "standard_deviation": 118.64,
+      "spending_consistency": "moderately variable",
+      "coefficient_of_variation": 0.258
+    },
+    "spending_trend": {
+      "direction": "stable",
+      "previous_spend": 1850.0,
+      "recent_spend": 1830.0,
+      "change_percentage": -1.08
+    },
+    "order_trend": {
+      "direction": "stable",
+      "recent_orders": 4,
+      "previous_orders": 4,
+      "change_percentage": 0.0
+    },
+    "rating_behavior": {
+      "average_rating_given": 4.38,
+      "ratings_count": 8,
+      "positive_rating_rate": 0.875
+    },
+    "customer_segment": "Highly loyal frequent customer",
+    "behavioral_insights": [
+      "North Indian is the most frequently ordered cuisine (50% of orders).",
+      "Customer shows strong restaurant loyalty and frequently repeats previous restaurants.",
+      "Average order value is ₹460, indicating medium average order spending.",
+      "Ordering activity has remained relatively stable.",
+      "Customer has been active within the last month.",
+      "Customer is more dinner-oriented than lunch-oriented."
+    ],
+    "evidence": {
+      "orders_analyzed": 8,
+      "first_order": "2026-08-11T20:49:00",
+      "last_order": "2026-09-01T20:00:00",
+      "data_source": "platform-native orders, restaurants and ratings"
+    },
+    "summary": "Amit Kumar is a highly loyal frequent customer on the platform. They have placed 8 orders with total recorded spending of ₹3680 and an average order value of ₹460. Their strongest cuisine preferences are North Indian, Biryani, Pizza. Restaurant loyalty is high. Ordering activity is stable, while spending is stable. Their last recorded order was 17 days ago."
+  },
+  "U1004": {
+    "user_id": "U1004",
+    "identity": {
+      "name": "Neha Verma",
+      "city": "Noida"
+    },
+    "ordering_profile": {
+      "total_orders": 6,
+      "total_spend": 2080.0,
+      "average_order_value": 346.67,
+      "median_order_value": 355.0,
+      "minimum_order_value": 250.0,
+      "maximum_order_value": 420.0,
+      "favorite_cuisines": [
+        {
+          "name": "Healthy",
+          "orders": 3,
+          "percentage": 0.5
+        },
+        {
+          "name": "South Indian",
+          "orders": 2,
+          "percentage": 0.333
+        },
+        {
+          "name": "Pizza",
+          "orders": 1,
+          "percentage": 0.167
+        }
+      ],
+      "favorite_restaurants": [
+        {
+          "name": "Healthy Bowl",
+          "orders": 3
+        },
+        {
+          "name": "South Spice",
+          "orders": 2
+        },
+        {
+          "name": "Dominos",
+          "orders": 1
+        }
+      ]
+    },
+    "recency": {
+      "first_order": "2026-08-17T19:35:00",
+      "last_order": "2026-09-01T13:00:00",
+      "days_since_last_order": 18,
+      "orders_last_30_days": 5,
+      "orders_last_60_days": 6,
+      "orders_last_90_days": 6
+    },
+    "frequency": {
+      "orders_per_week": 3.0,
+      "orders_per_month": 6.0,
+      "average_days_between_orders": 2.4,
+      "customer_lifetime_days": 14
+    },
+    "time_behavior": {
+      "preferred_day": "Monday",
+      "preferred_hour": 19,
+      "breakfast_orders": 0,
+      "lunch_orders": 3,
+      "dinner_orders": 3,
+      "late_night_orders": 0,
+      "weekday_orders": 4,
+      "weekend_orders": 2,
+      "weekend_order_rate": 0.333,
+      "dinner_order_rate": 0.5
+    },
+    "loyalty": {
+      "level": "medium",
+      "repeat_order_rate": 0.5,
+      "unique_restaurants": 3,
+      "repeat_orders": 3,
+      "top_restaurant": "Healthy Bowl",
+      "top_restaurant_share": 0.5
+    },
+    "spending": {
+      "spending_level": "low",
+      "total_spend": 2080.0,
+      "average_order_value": 346.67,
+      "median_order_value": 355.0,
+      "minimum_order_value": 250.0,
+      "maximum_order_value": 420.0,
+      "standard_deviation": 62.36,
+      "spending_consistency": "consistent",
+      "coefficient_of_variation": 0.18
+    },
+    "spending_trend": {
+      "direction": "stable",
+      "previous_spend": 950.0,
+      "recent_spend": 1130.0,
+      "change_percentage": 18.95
+    },
+    "order_trend": {
+      "direction": "stable",
+      "recent_orders": 3,
+      "previous_orders": 3,
+      "change_percentage": 0.0
+    },
+    "rating_behavior": {
+      "average_rating_given": 4.33,
+      "ratings_count": 6,
+      "positive_rating_rate": 0.833
+    },
+    "customer_segment": "Frequent customer",
+    "behavioral_insights": [
+      "Healthy is the most frequently ordered cuisine (50% of orders).",
+      "Customer shows moderate restaurant loyalty.",
+      "Average order value is ₹347, indicating low average order spending.",
+      "Ordering activity has remained relatively stable.",
+      "Customer has been active within the last month."
+    ],
+    "evidence": {
+      "orders_analyzed": 6,
+      "first_order": "2026-08-17T19:35:00",
+      "last_order": "2026-09-01T13:00:00",
+      "data_source": "platform-native orders, restaurants and ratings"
+    },
+    "summary": "Neha Verma is a frequent customer on the platform. They have placed 6 orders with total recorded spending of ₹2080 and an average order value of ₹347. Their strongest cuisine preferences are Healthy, South Indian, Pizza. Restaurant loyalty is medium. Ordering activity is stable, while spending is stable. Their last recorded order was 18 days ago."
+  },
+  "U1005": {
+    "user_id": "U1005",
+    "identity": {
+      "name": "Arjun Mehta",
+      "city": "Delhi"
+    },
+    "ordering_profile": {
+      "total_orders": 6,
+      "total_spend": 4120.0,
+      "average_order_value": 686.67,
+      "median_order_value": 690.0,
+      "minimum_order_value": 620.0,
+      "maximum_order_value": 750.0,
+      "favorite_cuisines": [
+        {
+          "name": "Chinese",
+          "orders": 3,
+          "percentage": 0.5
+        },
+        {
+          "name": "Biryani",
+          "orders": 2,
+          "percentage": 0.333
+        },
+        {
+          "name": "North Indian",
+          "orders": 1,
+          "percentage": 0.167
+        }
+      ],
+      "favorite_restaurants": [
+        {
+          "name": "Mainland China",
+          "orders": 3
+        },
+        {
+          "name": "Biryani Blues",
+          "orders": 2
+        },
+        {
+          "name": "Punjabi Tadka",
+          "orders": 1
+        }
+      ]
+    },
+    "recency": {
+      "first_order": "2026-08-17T20:35:00",
+      "last_order": "2026-09-01T20:00:00",
+      "days_since_last_order": 17,
+      "orders_last_30_days": 5,
+      "orders_last_60_days": 6,
+      "orders_last_90_days": 6
+    },
+    "frequency": {
+      "orders_per_week": 3.0,
+      "orders_per_month": 6.0,
+      "average_days_between_orders": 2,
+      "customer_lifetime_days": 14
+    },
+    "time_behavior": {
+      "preferred_day": "Monday",
+      "preferred_hour": 20,
+      "breakfast_orders": 0,
+      "lunch_orders": 0,
+      "dinner_orders": 6,
+      "late_night_orders": 0,
+      "weekday_orders": 4,
+      "weekend_orders": 2,
+      "weekend_order_rate": 0.333,
+      "dinner_order_rate": 1.0
+    },
+    "loyalty": {
+      "level": "medium",
+      "repeat_order_rate": 0.5,
+      "unique_restaurants": 3,
+      "repeat_orders": 3,
+      "top_restaurant": "Mainland China",
+      "top_restaurant_share": 0.5
+    },
+    "spending": {
+      "spending_level": "high",
+      "total_spend": 4120.0,
+      "average_order_value": 686.67,
+      "median_order_value": 690.0,
+      "minimum_order_value": 620.0,
+      "maximum_order_value": 750.0,
+      "standard_deviation": 43.08,
+      "spending_consistency": "consistent",
+      "coefficient_of_variation": 0.063
+    },
+    "spending_trend": {
+      "direction": "stable",
+      "previous_spend": 2050.0,
+      "recent_spend": 2070.0,
+      "change_percentage": 0.98
+    },
+    "order_trend": {
+      "direction": "stable",
+      "recent_orders": 3,
+      "previous_orders": 3,
+      "change_percentage": 0.0
+    },
+    "rating_behavior": {
+      "average_rating_given": 4.67,
+      "ratings_count": 6,
+      "positive_rating_rate": 1.0
+    },
+    "customer_segment": "Frequent premium customer",
+    "behavioral_insights": [
+      "Chinese is the most frequently ordered cuisine (50% of orders).",
+      "Customer shows moderate restaurant loyalty.",
+      "Average order value is ₹687, indicating high average order spending.",
+      "Ordering activity has remained relatively stable.",
+      "Customer has been active within the last month.",
+      "Customer is more dinner-oriented than lunch-oriented."
+    ],
+    "evidence": {
+      "orders_analyzed": 6,
+      "first_order": "2026-08-17T20:35:00",
+      "last_order": "2026-09-01T20:00:00",
+      "data_source": "platform-native orders, restaurants and ratings"
+    },
+    "summary": "Arjun Mehta is a frequent premium customer on the platform. They have placed 6 orders with total recorded spending of ₹4120 and an average order value of ₹687. Their strongest cuisine preferences are Chinese, Biryani, North Indian. Restaurant loyalty is medium. Ordering activity is stable, while spending is stable. Their last recorded order was 17 days ago."
+  }
+}

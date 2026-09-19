@@ -11,13 +11,16 @@ def similar_users(user_id, limit=3):
 
         def features(ctx):
             result = {}
-            for item in ctx["ordering_profile"]["favorite_cuisines"]:
+            ordering = ctx.get("ordering_profile", {})
+            behavior = ctx.get("behavior") or ctx.get("time_behavior", {})
+
+            for item in ordering.get("favorite_cuisines", []):
                 result[f"cuisine:{item['name']}"] = item["orders"]
-            for item in ctx["ordering_profile"]["favorite_restaurants"]:
+            for item in ordering.get("favorite_restaurants", []):
                 result[f"restaurant:{item['name']}"] = item["orders"]
-            result["avg_order"] = ctx["ordering_profile"]["average_order_value"] / 100
-            result["dinner_rate"] = ctx["behavior"]["dinner_order_rate"]
-            result["weekend_rate"] = ctx["behavior"]["weekend_order_rate"]
+            result["avg_order"] = ordering.get("average_order_value", 0) / 100
+            result["dinner_rate"] = behavior.get("dinner_order_rate", 0)
+            result["weekend_rate"] = behavior.get("weekend_order_rate", 0)
             return result
 
         ids = list(contexts)
@@ -28,10 +31,11 @@ def similar_users(user_id, limit=3):
         results = []
         for i, uid in enumerate(ids):
             if uid != user_id:
+                context = contexts[uid] or {}
                 results.append({
                     "user_id": uid,
-                    "name": contexts[uid]["name"],
-                    "city": contexts[uid]["city"],
+                    "name": context.get("name") or context.get("identity", {}).get("name"),
+                    "city": context.get("city") or context.get("identity", {}).get("city"),
                     "similarity": round(float(scores[i]), 3)
                 })
         return sorted(results, key=lambda x: x["similarity"], reverse=True)[:limit]

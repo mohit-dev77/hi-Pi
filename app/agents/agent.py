@@ -1,97 +1,314 @@
+
+import json
 import os
-from rapidfuzz import process, fuzz
-from app.context.builder import ContextBuilder
-from app.matching.similarity import similar_users
 
-try:
-    from google import genai
-except Exception:
-    genai = None
+import requests
+from dotenv import load_dotenv
 
-def find_user(query, builder):
-    from app.database.models import User
-    users = builder.db.query(User).all()
-    names = [u.name for u in users]
-    match = process.extractOne(query, names, scorer=fuzz.WRatio)
-    if not match or match[1] < 65:
-        return None, 0.0
-    user = next(u for u in users if u.name == match[0])
-    return user, match[1] / 100
+from app.context.context_store import ContextStore
 
-def local_answer(query, ctx):
-    q = query.lower()
-    p = ctx["ordering_profile"]
 
-    if "similar" in q:
-        matches = similar_users(ctx["user_id"])
-        return "Similar users: " + "; ".join(
-            f"{m['name']} ({m['similarity']:.0%})" for m in matches
+load_dotenv()
+
+
+class ContextAgent:
+
+    GEMINI_URL = (
+        "https://generativelanguage.googleapis.com/"
+        "v1beta/models/gemini-flash-latest:generateContent"
+    )
+
+    def __init__(self):
+
+        self.api_key = os.getenv(
+            "GEMINI_API_KEY"
         )
 
-    if "why" in q and "biryani" in q:
-        item = next((x for x in p["favorite_cuisines"] if x["name"].lower() == "biryani"), None)
-        if item:
-            pct = item["orders"] / p["total_orders"]
-            return f"{ctx['name']} shows a Biryani preference because {item['orders']} of {p['total_orders']} recorded orders were Biryani-related ({pct:.0%})."
+        self.context_store = ContextStore()
 
-    if "spend" in q or "spending" in q:
-        return f"{ctx['name']} has recorded spending of ₹{p['total_spend']:.0f} across {p['total_orders']} orders, with an average order value of ₹{p['average_order_value']:.0f}."
+    def _fallback_answer(self, context: dict, question: str) -> str:
+        identity = context.get("identity", {})
+        ordering = context.get("ordering_profile", {})
+        customer_segment = context.get("customer_segment", "customer")
+        summary = context.get("summary", "")
+        favorite_cuisines = ordering.get("favorite_cuisines", [])
+        total_orders = ordering.get("total_orders", 0)
+        total_spend = ordering.get("total_spend", 0)
+        name = identity.get("name", "This customer")
 
-    if "cuisine" in q or "food" in q or "prefer" in q:
-        cuisines = ", ".join(x["name"] for x in p["favorite_cuisines"])
-        return f"{ctx['name']}'s strongest recorded cuisine preferences are {cuisines}."
+        cuisine_list = ", ".join(
+            item.get("name", "")
+            for item in favorite_cuisines[:3]
+            if item.get("name")
+        ) or "diverse cuisines"
 
-    if "customer" in q or "behavior" in q:
-        return ctx["summary"]
+        if summary:
+            return summary
 
-    return ctx["summary"]
-
-def gemini_answer(query, ctx):
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or genai is None:
-        return None
-    try:
-        client = genai.Client(api_key=api_key)
-        prompt = f"""You are the FoodLens Context Layer agent.
-Answer only from the supplied synthesized context and evidence. Never invent facts.
-User question: {query}
-Context:
-{ctx}
-Give a concise, natural answer and mention relevant evidence when useful."""
-        response = client.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            contents=prompt
+        answer = (
+            f"{name} is a {customer_segment} customer with {total_orders} orders "
+            f"and a total spend of ₹{total_spend:,.0f}. "
+            f"Their top cuisines include {cuisine_list}. "
+            f"This answer is based on the local synthesized context because "
+            f"GEMINI_API_KEY is not configured."
         )
-        return response.text
-    except Exception:
-        return None
 
-def answer_query(query):
-    builder = ContextBuilder()
-    try:
-        user, confidence = find_user(query, builder)
-        if not user:
+        if "tell me about" in question.lower() or "describe" in question.lower():
+            return answer
+
+        return (
+            f"Based on the available customer context, {name} appears to be a "
+            f"{customer_segment} customer with {total_orders} orders. "
+            f"Their most common cuisines are {cuisine_list}."
+        )
+
+    # ========================================================
+    # PUBLIC API
+    # ========================================================
+
+    def ask(self, user_id: str, question: str):
+
+        context = self.context_store.get(
+            user_id
+        )
+
+        if not context:
             return {
-                "found": False,
-                "answer": "I could not confidently match that person to a user in the platform database.",
-                "confidence": 0
+                "error": (
+                    f"No synthesized context found "
+                    f"for user '{user_id}'."
+                )
             }
 
-        ctx = builder.get_user_context(user.user_id)
-        normalized = query.lower().strip()
+        if not self.api_key:
+            answer = self._fallback_answer(
+                context,
+                question,
+            )
+            return {
+                "user_id": user_id,
+                "question": question,
+                "answer": answer,
+                "context": context,
+            }
 
-        if normalized.startswith("is ") and "database" in normalized:
-            answer = f"Yes. {user.name} is in the platform database."
-        else:
-            answer = gemini_answer(query, ctx) or local_answer(query, ctx)
+        prompt = self._build_prompt(
+            context,
+            question
+        )
+
+        answer = self._call_gemini(
+            prompt
+        )
 
         return {
-            "found": True,
-            "user_id": user.user_id,
-            "name": user.name,
-            "match_confidence": round(confidence, 3),
+            "user_id": user_id,
+            "question": question,
             "answer": answer,
-            "context": ctx
+            "context": context,
         }
-    finally:
-        builder.close()
+
+    # ========================================================
+    # PROMPT
+    # ========================================================
+
+    def _build_prompt(
+        self,
+        context: dict,
+        question: str
+    ):
+
+        context_json = json.dumps(
+            context,
+            indent=2,
+            ensure_ascii=False
+        )
+
+        return f"""
+You are the Context Intelligence Agent for FoodLens,
+a food-delivery platform.
+
+Your job is to answer questions about a customer using
+ONLY the synthesized customer context supplied below.
+
+The context has already been generated by the platform's
+Context Layer from raw platform activity such as:
+
+- orders
+- restaurants
+- cuisines
+- ratings
+- order timing
+- spending
+- recency
+- frequency
+- loyalty
+- behavioral trends
+
+Do NOT invent facts.
+
+Do NOT assume information that is not present.
+
+If the answer cannot be determined from the context,
+clearly say that the available customer context does
+not contain enough information.
+
+You should synthesize multiple context fields when
+answering open-ended questions.
+
+For example, if asked:
+
+"Tell me about this customer"
+
+combine relevant information about:
+
+- customer segment
+- ordering frequency
+- spending
+- favorite cuisines
+- restaurant loyalty
+- recent activity
+- ordering time
+- trends
+- behavioral insights
+
+Do not simply dump the JSON back to the user.
+
+Instead, provide a concise, natural-language explanation.
+
+When useful, include specific numbers from the context.
+
+Customer Context:
+-----------------
+
+{context_json}
+
+User Question:
+--------------
+
+{question}
+
+Answer the question using the customer context above.
+"""
+
+    # ========================================================
+    # GEMINI API
+    # ========================================================
+
+    def _call_gemini(
+        self,
+        prompt: str
+    ):
+
+        if not self.api_key:
+            raise RuntimeError(
+                "GEMINI_API_KEY is not configured; "
+                "using the fallback deterministic context answer instead."
+            )
+
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
+
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [
+                        {
+                            "text": prompt
+                        }
+                    ]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,
+                "maxOutputTokens": 700,
+            }
+        }
+
+        try:
+
+            response = requests.post(
+                self.GEMINI_URL,
+                headers=headers,
+                json=payload,
+                timeout=30,
+            )
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            return self._extract_text(
+                data
+            )
+
+        except requests.HTTPError as exc:
+
+            try:
+                error_data = response.json()
+
+            except Exception:
+                error_data = response.text
+
+            raise RuntimeError(
+                f"Gemini API error: "
+                f"{error_data}"
+            ) from exc
+
+        except requests.RequestException as exc:
+
+            raise RuntimeError(
+                f"Unable to connect to Gemini API: "
+                f"{exc}"
+            ) from exc
+
+    # ========================================================
+    # RESPONSE PARSER
+    # ========================================================
+
+    @staticmethod
+    def _extract_text(data):
+
+        candidates = data.get(
+            "candidates",
+            []
+        )
+
+        if not candidates:
+            raise RuntimeError(
+                "Gemini returned no candidates."
+            )
+
+        content = candidates[0].get(
+            "content",
+            {}
+        )
+
+        parts = content.get(
+            "parts",
+            []
+        )
+
+        text_parts = []
+
+        for part in parts:
+
+            text = part.get("text")
+
+            if text:
+                text_parts.append(text)
+
+        if not text_parts:
+
+            raise RuntimeError(
+                "Gemini returned an empty response."
+            )
+
+        return "\n".join(
+            text_parts
+        ).strip()
+
+
