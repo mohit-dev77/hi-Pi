@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+pandas
+rapidfuzz
+scikit-learn
+streamlit
+requests
+python-dotenv
+google-genai
